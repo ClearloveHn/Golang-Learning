@@ -26,9 +26,11 @@ type slice struct {
 #### 1.5.2切片的扩容机制
 Go1.18之前:  
 当原 slice 容量小于 1024 的时候，新 slice 容量变成原来的 2 倍；原 slice 容量超过 1024，新 slice 容量变成原来的1.25倍。  
+
 Go1.18之后:  
-当原slice容量(oldcap)小于256的时候，新slice(newcap)容量为原来的2倍；  
-原slice容量超过256，新slice容量newcap = oldcap+(oldcap+3*256)/4。  
+1.当原slice容量(oldcap)小于256的时候，新slice(newcap)容量为原来的2倍；  
+2.原slice容量超过256，新slice容量newcap = oldcap+(oldcap+3*256)/4。  
+
 注意：实际应用中并不是完全遵守以上规则,如果只看前半部分是相同的,但是后半部分,go会做内存对齐，内存对齐之后的新slice容量要大于等于前半部分生成的切片容量。
 ### 1.6切片作为函数参数
 1.当 slice 作为函数参数时，就是一个普通的结构体。  
