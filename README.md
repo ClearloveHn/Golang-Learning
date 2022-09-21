@@ -73,7 +73,10 @@ Golang Map的扩容时机:
 1.都为nil  
 2.非空,长度相等,指向同一个map实体对象。  
 3.相应的key指向的value深度相等。
- 
+
+## 3.接口(Interface)
+
+
 
 
 
