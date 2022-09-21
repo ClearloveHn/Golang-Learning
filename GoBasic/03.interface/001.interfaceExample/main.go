@@ -25,7 +25,6 @@ func (p *Gopher) debug() {
 }
 
 func main() {
-
 	//实例化struct类型
 	var c = Gopher{
 		language: "Golang",
