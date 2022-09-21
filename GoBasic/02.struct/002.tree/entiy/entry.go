@@ -1,7 +1,7 @@
 package main
 
 import (
-	tree "Golang-Learning/GoBasic/02.structAndInterface/002.tree"
+	tree "Golang-Learning/GoBasic/02.struct/002.tree"
 	"fmt"
 )
 
