@@ -103,6 +103,17 @@ func main() {
 3.以一种通用的方式对待个使用的对象。   
 4.非动态语言必须通过继承和接口的方式来实现。   
 
+## 4.Goroutine
+### 4.1什么是Goroutine
+Goroutine是Go中协程的实现,是Go中的基本执行单元,是一个与其它goroutine并行运行在同一地址空间的函数或方法。  
+### 4.2Goroutine和线程的区别
+1.Goroutine(2KB)的内存占用比线程(1MB)小很多。  
+2.Goroutine创建和销毁的消耗比线程小,因为线程是内核态,Goroutine是用户态。  
+3.Goroutine的切换成本比线程小,因为Goroutine切换的时候只需要三个寄存器。
+### 
+
+
+
 
 
 
