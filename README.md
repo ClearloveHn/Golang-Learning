@@ -110,7 +110,11 @@ Goroutine是Go中协程的实现,是Go中的基本执行单元,是一个与其�
 1.Goroutine(2KB)的内存占用比线程(1MB)小很多。  
 2.Goroutine创建和销毁的消耗比线程小,因为线程是内核态,Goroutine是用户态。  
 3.Goroutine的切换成本比线程小,因为Goroutine切换的时候只需要三个寄存器。
-### 
+### 4.3GMP是什么
+GMP是Go调度的三个核心组件
+G:代表一个goroutine,它包含:表示goroutine栈的一些字段,指示当前 goroutine 的状态,指示当前运行到的指令地址,也就是 PC 值。  
+M:对内核级线程的封装,数量对应真实的CPU数。
+P:即为G和M的调度对象,用来调度G和M之间的关联关系,它维护一个处于Runnable状态的g队列,需要获得p才能运行g。
 
 
 
