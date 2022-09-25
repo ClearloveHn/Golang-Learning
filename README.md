@@ -117,6 +117,25 @@ M:对内核级线程的封装,数量对应真实的CPU数。
 P:即为G和M的调度对象,用来调度G和M之间的关联关系,它维护一个处于Runnable状态的g队列,需要获得p才能运行g。  
 ### 4.4为什么要有P
 调度器把G都分配到M上,不同的G在不同的M并发运行时,都需要向系统申请资源,比如堆栈内存等。因为资源是全局的,就会因为资源竞争照成很多性能损耗。为了解决这一的问题go从 1.1 版本引入,在运行时系统的时候加入p对象,让P去管理这个G对象,M想要运行G,必须绑定 P,才能运行P所管理的G。
+### 4.5Goroutine的调度时机有哪些
+TODO
+### 4.6GMP调度流程
+1. 每个P有个局部队列,局部队列保存待执行的goroutine,当M绑定的P的的局部队列已经满了之后就会把goroutine放到全局队列。  
+2. 每个P和一个M绑定,M是真正的执行P中 goroutine的实体,M从绑定的P中的局部队列获取G来执行。  
+3. 当M绑定的P的局部队列为空时,M会从全局队列获取到本地队列来执行G),当从全局队列中没有获取到可执行的G时候,M会从其他P的局部队列中偷取G来执行,这种从其他P偷的方式称为work stealing。  
+4. 当G因系统调用(syscall)阻塞时会阻塞M,此时P会和M解绑即hand off,并寻找新的闲置的M,若没有idle的M就会新建一个 M。  
+5. 当G因channel或者network I/O阻塞时,不会阻塞M,M会寻找其他就绪的G。当阻塞的G恢复后会重新进入就绪状态,进入 P 队列等待执行。
+### 4.7Goroutine的调度方式
+1.在Go1.14版本之前Goroutine是协作式的抢占式调度(程序只能依靠Goroutine自己交出CPU资源才能触发调度),存在以下问题。   
+1.1 某些Goroutine可以长时间占用线程,造成其它Goroutine的饥饿。  
+1.2 垃圾回收需要暂停整个程序(Stop-the-world,STW),最长可能需要几分钟的时间,导致整个程序无法工作。  
+2.在1.14版本之后Go采用了基于信号的抢占式调度(异步抢占)。  
+2.1 M注册一个 SIGURG信号的处理函数：sighandler。  
+ sysmon 线程检测到执行时间过长的 goroutine、GCstw时,会向相应的M(或者说线程,每个线程对应一个M)发送SIGURG信号。   
+ 收到信号后,内核执行sighandler函数,通过pushCall插入asyncPreempt函数调用。  
+2.2回到当前goroutine执行asyncPreempt函数,通过mcall切到g0栈执行gopreempt_m。  
+2.3将当前goroutine插入到全局可运行队列,M则继续寻找其他goroutine来运行。  
+2.4被抢占的goroutine再次调度过来执行时,会继续原来的执行流。  
 
 
 
