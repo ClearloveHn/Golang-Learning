@@ -118,7 +118,10 @@ P:即为G和M的调度对象,用来调度G和M之间的关联关系,它维护一
 ### 4.4为什么要有P
 调度器把G都分配到M上,不同的G在不同的M并发运行时,都需要向系统申请资源,比如堆栈内存等。因为资源是全局的,就会因为资源竞争照成很多性能损耗。为了解决这一的问题go从 1.1 版本引入,在运行时系统的时候加入p对象,让P去管理这个G对象,M想要运行G,必须绑定 P,才能运行P所管理的G。
 ### 4.5Goroutine的调度时机有哪些
-TODO
+1. 使用关键字Go: go创建一个新的goroutine,Go scheduler会考虑调度。  
+2. GC:由于进行GC的goroutine也需要在M上运行,因此肯定会发生调度。当然,Go scheduler还会做很多其他的调度,例如调度不涉及堆访问的 goroutine 来运行。GC不管栈上的内存,只会回收堆上的内存。    
+3. 系统调用: 当goroutine进行系统调用时,会阻塞 M,所以它会被调度走,同时一个新的goroutine会被调度上来。
+4. 内寸同步访问: atomic,mutex,channel操作等会使goroutine阻塞,因此会被调度走。等条件满足后（例如其他 goroutine 解锁了）还会被调度上来继续运行。
 ### 4.6GMP调度流程
 1. 每个P有个局部队列,局部队列保存待执行的goroutine,当M绑定的P的的局部队列已经满了之后就会把goroutine放到全局队列。  
 2. 每个P和一个M绑定,M是真正的执行P中 goroutine的实体,M从绑定的P中的局部队列获取G来执行。  
@@ -136,6 +139,7 @@ TODO
 2.2回到当前goroutine执行asyncPreempt函数,通过mcall切到g0栈执行gopreempt_m。  
 2.3将当前goroutine插入到全局可运行队列,M则继续寻找其他goroutine来运行。  
 2.4被抢占的goroutine再次调度过来执行时,会继续原来的执行流。  
+### 4.8如何关闭一个Goroutine
 
 
 
