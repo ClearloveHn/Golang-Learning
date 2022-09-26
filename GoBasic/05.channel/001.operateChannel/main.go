@@ -17,7 +17,6 @@ func send() {
 }
 
 func main() {
-
 	defer close(values) //defer 关闭channel
 	go send()
 	fmt.Println("waiting")
