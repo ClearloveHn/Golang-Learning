@@ -14,5 +14,5 @@ func showMsg(msg string) {
 
 func main() {
 	go showMsg("Golang")
-	time.Sleep(time.Millisecond * 2000)
+	time.Sleep(time.Millisecond * 2000) //暂停主routine的执行,等待其余Goroutine执行完毕。
 }
