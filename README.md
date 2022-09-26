@@ -140,6 +140,22 @@ P:即为G和M的调度对象,用来调度G和M之间的关联关系,它维护一
 2.3将当前goroutine插入到全局可运行队列,M则继续寻找其他goroutine来运行。  
 2.4被抢占的goroutine再次调度过来执行时,会继续原来的执行流。  
 ### 4.8如何关闭一个Goroutine
+TODO  
+
+## 5.Channel
+### 5.1什么是CSP
+是一种并发编程模型,是一个很强大的并发数据模型,是上个世纪七十年代提出的,用于描述两个独立的并发实体通过共享的通讯channel(管道)进行通信的并发模型。相对于Actor模型,CSP中channel是第一类对象,它不关注发送消息的实体,而关注与发送消息时使用的channel。
+### 5.2Channel操作总结
+|操作|nil channel|closed channel|not nil not closed channel|
+|:---|---|---|---|
+|close | panic| panic|正常关闭 | 
+|读|阻塞| 读到对应类型的零值|阻塞或正常读取数据。缓冲型 channel 为空或非缓冲型 channel 没有等待发送者时会阻塞|
+|写|阻塞|panic|阻塞或正常写入数据。非缓冲型 channel 没有等待接收者或缓冲型 channel buf 满时会被阻塞|
+### 5.3Channel会在什么情况下引起资源泄漏
+1. 泄漏的原因是 goroutine 操作channel后,处于发送或接收阻塞状态,而channel处于满或空的状态,一直得不到改变。同时,垃圾回收器也不会回收此类资源,进而导致gouroutine会一直处于等待队列中，不见天日。
+2. 另外,程序运行过程中,对于一个 channel,如果没有任何goroutine引用了它,gc会对其进行回收操作,不会引起内存泄漏。
+
+
 
 
 
