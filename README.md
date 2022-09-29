@@ -132,13 +132,7 @@ P:即为G和M的调度对象,用来调度G和M之间的关联关系,它维护一
 1.在Go1.14版本之前Goroutine是协作式的抢占式调度(程序只能依靠Goroutine自己交出CPU资源才能触发调度),存在以下问题。   
 1.1 某些Goroutine可以长时间占用线程,造成其它Goroutine的饥饿。  
 1.2 垃圾回收需要暂停整个程序(Stop-the-world,STW),最长可能需要几分钟的时间,导致整个程序无法工作。  
-2.在1.14版本之后Go采用了基于信号的抢占式调度(异步抢占)。  
-2.1 M注册一个 SIGURG信号的处理函数：sighandler。  
- sysmon 线程检测到执行时间过长的 goroutine、GCstw时,会向相应的M(或者说线程,每个线程对应一个M)发送SIGURG信号。   
- 收到信号后,内核执行sighandler函数,通过pushCall插入asyncPreempt函数调用。  
-2.2回到当前goroutine执行asyncPreempt函数,通过mcall切到g0栈执行gopreempt_m。  
-2.3将当前goroutine插入到全局可运行队列,M则继续寻找其他goroutine来运行。  
-2.4被抢占的goroutine再次调度过来执行时,会继续原来的执行流。  
+2.在1.14版本之后Go采用了基于信号的抢占式调度(异步抢占)。    
 ### 4.8如何关闭一个Goroutine
 TODO  
 
